@@ -131,6 +131,10 @@ end
 
 * return the first value of rbtree
 
+### pop
+
+* return and pop out the first value of rbtree
+
 
 ### last
 

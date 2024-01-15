@@ -317,6 +317,46 @@ static int l_first(lua_State* L) {
     return 1;
 }
 
+static int l_pop(lua_State* L) {
+    rbroot_t* root;
+    l_node_t* node;
+
+    root = CHECK_RBTREE(L, 1);
+    node = rb_entry(rb_first(root), l_node_t, rb);
+    if (NULL == node) {
+        lua_pushnil(L);
+        return 1;
+    }
+
+    lua_getuservalue(L, 1);
+    lua_getfield(L, -1, "value_map");
+    lua_pushlightuserdata(L, (void*)node);
+    lua_rawget(L, -2);
+
+    lua_insert(L, 1);
+    lua_settop(L, 2);   // now stack is retValue, self, size is 2
+
+    lua_getuservalue(L, 2);
+
+    lua_getfield(L, -1, "node_map");
+    lua_pushvalue(L, 1);  // value
+    lua_pushnil(L);
+    lua_rawset(L, -3);
+    lua_pop(L, 1);
+
+    lua_getfield(L, -1, "value_map");
+    lua_pushlightuserdata(L, (void*)node);
+    lua_pushnil(L);
+    lua_rawset(L, -3);
+    lua_pop(L, 1);
+
+    rb_erase(&node->rb, root);
+    free(node);
+
+    lua_pushvalue(L, 1);
+    return 1;
+}
+
 static int l_last(lua_State* L) {
     rbroot_t* root;
     l_node_t* last;
@@ -360,6 +400,7 @@ static luaL_Reg module_m[] = {
         {"walk", l_walk},
         {"first", l_first},
         {"last", l_last},
+        {"pop", l_pop},
         {NULL, NULL},
 };
 

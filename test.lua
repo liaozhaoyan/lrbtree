@@ -68,3 +68,10 @@ print("--- walk")
 for i, v in r:walk() do
     print(i, v, v[1])
 end
+
+assert(r:pop()[1] == 1)
+assert(r:pop()[1] == 2)
+assert(r:pop()[1] == 4)
+assert(r:pop()[1] == 5)
+assert(not r:pop())
+assert(not r:pop())
